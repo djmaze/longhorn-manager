@@ -50,6 +50,12 @@ func main() {
 			Usage:  "Specify Longhorn engine image",
 		},
 
+		cli.StringFlag{
+			Name:  orch.FrontendParam,
+			Usage: "Choose frontend: tgt, tcmu",
+			Value: "tgt",
+		},
+
 		// Docker
 		cli.StringSliceFlag{
 			Name:  "etcd-servers",
@@ -80,6 +86,10 @@ func RunManager(c *cli.Context) error {
 
 	if c.Bool("debug") {
 		logrus.SetLevel(logrus.DebugLevel)
+	}
+
+	if c.String(orch.FrontendParam) == "" {
+		return fmt.Errorf("Must specify %v", orch.FrontendParam)
 	}
 
 	if c.String(orch.EngineImageParam) == "" {

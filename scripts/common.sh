@@ -12,6 +12,8 @@ LONGHORN_ENGINE_IMAGE=rancher/longhorn-engine:046b5a5
 
 LONGHORN_ENGINE_BINARY_NAME=${TEST_PREFIX}-engine-binary
 LONGHORN_MANAGER_NAME=${TEST_PREFIX}-manager
+# FIXME Test tcmu as well (as soon as it is stable)
+LONGHORN_MANAGER_FRONTEND=tgt
 
 BACKUPSTORE_PATH=/opt/backupstore
 
@@ -147,6 +149,7 @@ function start_mgr {
             -v /var/run:/var/run ${extra} \
             --volumes-from ${LONGHORN_ENGINE_BINARY_NAME} ${image} \
             /usr/local/sbin/launch-manager -d --orchestrator docker \
+            --frontend ${LONGHORN_MANAGER_FRONTEND} \
             --engine-image ${LONGHORN_ENGINE_IMAGE} \
             --etcd-servers http://${etcd_ip}:2379
     echo ${name} is up

@@ -29,6 +29,7 @@ const (
 )
 
 type dockerOrc struct {
+	Frontend    string
 	EngineImage string
 	Network     string
 	IP          string
@@ -42,10 +43,11 @@ type dockerOrc struct {
 }
 
 type dockerOrcConfig struct {
-	servers []string
-	prefix  string
-	image   string
-	network string
+	servers  []string
+	prefix   string
+	frontend string
+	image    string
+	network  string
 }
 
 func New(c *cli.Context) (types.Orchestrator, error) {
@@ -54,13 +56,15 @@ func New(c *cli.Context) (types.Orchestrator, error) {
 		return nil, fmt.Errorf("Unspecified etcd servers")
 	}
 	prefix := c.String("etcd-prefix")
+	frontend := c.String(orch.FrontendParam)
 	image := c.String(orch.EngineImageParam)
 	network := c.String("docker-network")
 	return newDocker(&dockerOrcConfig{
-		servers: servers,
-		prefix:  prefix,
-		image:   image,
-		network: network,
+		servers:  servers,
+		prefix:   prefix,
+		frontend: frontend,
+		image:    image,
+		network:  network,
 	})
 }
 
@@ -71,6 +75,7 @@ func newDocker(cfg *dockerOrcConfig) (types.Orchestrator, error) {
 	}
 
 	docker := &dockerOrc{
+		Frontend:    cfg.frontend,
 		EngineImage: cfg.image,
 		kv:          kvStore,
 	}

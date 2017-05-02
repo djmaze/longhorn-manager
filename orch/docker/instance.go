@@ -165,7 +165,7 @@ func (d *dockerOrc) createController(data *dockerScheduleData) (instance *types.
 	cmd := []string{
 		"launch", "controller",
 		"--listen", "0.0.0.0:9501",
-		"--frontend", "tgt",
+		"--frontend", d.Frontend,
 	}
 	for _, url := range data.ReplicaURLs {
 		cmd = append(cmd, "--replica", url)
@@ -181,6 +181,7 @@ func (d *dockerOrc) createController(data *dockerScheduleData) (instance *types.
 			Binds: []string{
 				"/dev:/host/dev",
 				"/proc:/host/proc",
+				"/sys/kernel/config:/sys/kernel/config",
 			},
 			Privileged:  true,
 			NetworkMode: dContainer.NetworkMode(d.Network),

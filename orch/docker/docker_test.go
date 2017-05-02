@@ -14,6 +14,7 @@ const (
 	TestPrefix = "longhorn-manager-test"
 
 	EnvEtcdServer  = "LONGHORN_MANAGER_TEST_ETCD_SERVER"
+	EnvFrontend    = "LONGHORN_MANAGER_FRONTEND"
 	EnvEngineImage = "LONGHORN_ENGINE_IMAGE"
 )
 
@@ -28,6 +29,7 @@ func Test(t *testing.T) { TestingT(t) }
 
 type TestSuite struct {
 	d           *dockerOrc
+	frontend    string
 	engineImage string
 
 	// Index by instance.ID
@@ -44,12 +46,16 @@ func (s *TestSuite) SetUpTest(c *C) {
 	etcdIP := os.Getenv(EnvEtcdServer)
 	c.Assert(etcdIP, Not(Equals), "")
 
+	s.frontend = os.Getenv(EnvFrontend)
+	c.Assert(s.frontend, Not(Equals), "")
+
 	s.engineImage = os.Getenv(EnvEngineImage)
 	c.Assert(s.engineImage, Not(Equals), "")
 
 	cfg := &dockerOrcConfig{
-		servers: []string{"http://" + etcdIP + ":2379"},
-		prefix:  "/longhorn",
+		servers:  []string{"http://" + etcdIP + ":2379"},
+		frontend: s.frontend,
+		prefix:   "/longhorn",
 	}
 	orc, err := newDocker(cfg)
 	c.Assert(err, IsNil)
